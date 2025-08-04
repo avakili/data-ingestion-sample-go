@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./backend
+    container_name: data-ingestion-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=postgres://postgres:postgrespw@db:5432/data_ingestion_db
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    container_name: data-ingestion-db
+    environment:
+      POSTGRES_DB: data_ingestion_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/0000-datapoints.up.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
